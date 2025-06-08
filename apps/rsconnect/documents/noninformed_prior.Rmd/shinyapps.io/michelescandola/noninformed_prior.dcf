@@ -1,0 +1,12 @@
+name: noninformed_prior
+title: noninformed_prior
+username: michelescandola
+account: michelescandola
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 14898778
+bundleId: 10416105
+url: https://michelescandola.shinyapps.io/noninformed_prior/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

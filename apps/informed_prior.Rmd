@@ -1,0 +1,43 @@
+---
+title: "Informed Prior"
+author: "Michele Scandola"
+date: "`r Sys.Date()`"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Modify the prior distribution and observe what happens to the posterior distribution.
+
+```{r, echo=FALSE}
+renderPlot({
+  a0 <- as.numeric(input$a)
+  b0 <- 30 - a0
+  
+  successes <- 10##33%
+  failures  <- 20##77%
+  
+  ## posterior
+  curve(dbeta(x,a0+successes,b0+failures), from=0, to=1,
+        xlab="%success",
+        ylab="Density",lty=1,lwd=4, ylim = c(0,10),
+        axes = FALSE, col = "red", xlim = c(0,1))
+  ## likelihood
+  curve(dbeta(x,successes+1,failures+1),add=TRUE,lty=2,lwd=4,
+        col = "blue")
+  ## prior
+  curve(dbeta(x,a0,b0),add=TRUE,lty=3,lwd=4, col = "green")
+  legend(.7,10,c("Prior","Likelihood","Posterior"),
+         lty=c(3,2,1),lwd=c(3,3,3),col=c("green","blue","red"))
+  axis(side = 1, at = seq(from = 0, to = 1, by = 0.1),
+       labels = paste0(seq(from = 0, to = 100, by = 10), "%"))
+})
+
+inputPanel(
+  sliderInput("a", label = "Prior distribution of successes:",
+              min = 0, max = 30, value = 15, step = 1)
+)
+```

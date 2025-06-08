@@ -1,0 +1,13 @@
+name: MCMC
+title: MCMC
+username: michelescandola
+account: michelescandola
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 14898719
+bundleId:
+url: https://michelescandola.shinyapps.io/MCMC/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: BF.R|BF_pd_pROPE.R|informed_prior.R|noninformed_prior.R

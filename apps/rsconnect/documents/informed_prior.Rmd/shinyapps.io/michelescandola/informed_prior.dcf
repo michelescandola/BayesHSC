@@ -1,0 +1,12 @@
+name: informed_prior
+title: informed_prior
+username: michelescandola
+account: michelescandola
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 14898775
+bundleId: 10416101
+url: https://michelescandola.shinyapps.io/informed_prior/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

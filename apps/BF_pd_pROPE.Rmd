@@ -1,0 +1,102 @@
+---
+title: "Bayes Factor, Probability of Direction and Percentage in ROPE simulation"
+author: "Michele Scandola"
+date: "`r Sys.Date()`"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, echo=FALSE}
+renderPlot({
+  mean_prior <- as.numeric(input$mp)
+  var_prior  <- as.numeric(input$vp)
+  rope_lims  <- as.numeric(input$rope_lims)
+  cohend  <- as.numeric(input$cohend)
+  
+  mean_obs <- cohend
+  var_obs <- 0.35^2
+  
+  var_post  <- 1/(1/var_prior + 1/var_obs)
+  mean_post <- (mean_prior / var_prior + mean_obs / var_obs) * var_post
+  
+  dprior <- round(dnorm(x=mean_prior,mean=mean_prior,sqrt(var_prior)), 2)
+  dpost  <- round(dnorm(x=mean_prior,mean=mean_post,sqrt(var_post)), 2)
+  
+  rpost <- rnorm(mean=mean_post,sd = sqrt(var_post), n = 10000)
+  
+  pd <- round(
+    max(
+      c(
+        mean( rpost > 0 ),
+        mean( rpost < 0 )
+        )
+      ) * 100,
+    2
+    )
+  pROPE <- round(
+    mean(
+      rpost > -rope_lims & rpost < rope_lims
+      ) * 100,
+    2
+    )
+  
+  ## posterior
+  curve(dnorm(x,mean_post,sqrt(var_post)), from=-15, to=15,
+        xlab="Average score",
+        ylab="Density",lty=1,lwd=4, ylim = c(0,0.4),
+        axes = FALSE, col = "red",
+        main = paste0("BF10 =",
+                              round(
+                                  dprior/
+                                  dpost,
+                                2),
+                     " BF01 =",
+                              round(
+                                dpost/
+                                dprior,
+                                2),
+                     " pd = ", pd, "%",
+                     " pROPE = ", pROPE, "%"
+                     )
+        )
+  ## likelihood
+  curve(dnorm(x,mean_obs,sqrt(var_obs)),add=TRUE,lty=2,lwd=4,
+        col = "blue")
+  ## prior
+  curve(dnorm(x,mean_prior,sqrt(var_prior)),add=TRUE,lty=3,lwd=4, col = "green")
+  legend("topleft",c("Prior","Likelihood","Posterior"),
+         lty=c(3,2,1),lwd=c(3,3,3),col=c("green","blue","red"))
+  axis(side = 1, at = seq(from = -15, to = 15, by = 1))
+  abline( v = mean_prior, col = "purple")#line for my "zero"
+  
+  abline( v = -rope_lims, col = "orange")
+  abline( v = rope_lims, col = "orange")
+  
+  points(x = mean_prior, y = dprior,
+         pch = 19 )
+  points(x = mean_prior, y = dpost,
+         pch = 19 )
+  
+  text(x = mean_prior,
+       y = dprior+0.05,
+       label = dprior)
+  text(x = mean_prior,
+       y = dpost+0.05,
+       label = dpost)
+})
+
+inputPanel(
+  sliderInput("cohend", label = "Change the observed effect size:",
+              min = 0.1, max = 2, value = 0.3, step = 0.1),
+  sliderInput("vp", label = "Change the variance of the prior distribution:",
+              min = 0.1, max = 10, value = 0.15, step = 0.05),
+  sliderInput("mp", label = "Change the mean of the prior distribution:",
+              min = -5, max = 5, value = 0, step = 1),
+  sliderInput("rope_lims", label = "Change the symmetric range of the Region of Practical Equivalence:",
+              min = 0.1, max = 3, value = 0.5, step = 0.1)
+)
+```

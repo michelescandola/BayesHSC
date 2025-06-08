@@ -1,0 +1,74 @@
+---
+title: "MCMC simulation"
+author: "Michele Scandola"
+date: "`r Sys.Date()`"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, echo=FALSE}
+sidebarPanel(
+  sliderInput("N", label = "Number of MCMC iterations:",
+                min = 100, max = 5000, value = 100, step = 100),
+  width = 15
+)
+
+renderPlot({
+  old.par <- par()
+  
+  f <- function(x)
+        0.3 * dnorm(x, mean = 90, sd = 20) +
+        0.1 * dnorm(x, mean = 65, sd = 20) +
+        0.4 * dnorm(x, mean = 30, sd = 10) +
+        0.2 * dnorm(x, mean = 150, sd = 10) 
+
+  dat <- c(rnorm(300, mean = 90, sd = 20),
+           rnorm(100, mean = 65, sd = 20),
+           rnorm(400, mean = 30, sd = 10),
+           rnorm(200, mean = 150, sd = 10))
+  
+  n <- as.numeric(input$N)
+  
+  myMCMC_step <- function(old_point, density_function){
+      new_point <- rnorm(1, mean = old_point, sd = 50)
+      
+      ## Acceptance probability:
+      alpha <- min(1, density_function(new_point) / density_function(old_point))
+      
+      ## Accept new point with probability alpha:
+      if (runif(1) < alpha){
+        return( new_point )
+      } else {
+        return( old_point )
+      }
+  }
+  
+  set.seed( 5 )
+  
+  x1 <- 95
+  
+  for(i in 2:5000){
+    x1 <- c( x1, myMCMC_step(x1[i-1] , f ) )
+  }
+  
+  par(mfrow=c(1,2))
+  plot(x = 1:n, y = x1[1:n] , type = "l",
+       xlim = c(1, n), ylim = c(min(x1), max(x1)),
+       main = paste("Traceplot", n, "iterazioni"))
+  plot(density(x1[1:n]), main = "Sampling distribution",
+       ylim = c(0,0.015), xlim = c(-4,200))
+  points(density(dat), type = "l", lwd = 4, col = "red")
+  rug(x1[1:n])
+  legend("topright",
+         lty = c(1,1),
+         col = c("black", "red"),
+         legend =c("MCMC distribution", "Original distribution")
+         )
+  
+  par(old.par)
+})
+```
