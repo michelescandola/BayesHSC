@@ -7,7 +7,7 @@ output:
     incremental: yes
     logo: logo.jpeg
     footer: "09/06/2025 $4^{th}$ BayesHSC - Hitchhiker's Guide to Bayesian Statistics - M. Scandola, @UniVR,
-      Human Sciences Dept., UniVR - https://michelescandola.shinyapps.io/BayesHSC/"
+      Human Sciences Dept., UniVR - https://github.com/michelescandola/BayesHSC"
 font-family: Serif
 subtitle: $4^{th}$ Bayes HSC 09/06/2025
 css: mystyle.css
@@ -26,6 +26,7 @@ library(knitr)
 library(DT)
 library(HDInterval)
 library(bayesplot)
+library(qrcode)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -252,7 +253,11 @@ knitr::opts_chunk$set(echo = FALSE)
 - Random sampling algorithm from a distribution (Monte Carlo)
 - Each new sampling is dependent on the previous sampling (Markov Chain)
 
-```{r}
+<table style="width:100%">
+<tr>
+<td style="width:50%">
+
+```{r fig.width=6}
 f <- function(x)
   0.3 * dnorm(x, mean = 90, sd = 20) +
   0.1 * dnorm(x, mean = 65, sd = 20) +
@@ -266,11 +271,14 @@ dat <- c(rnorm(300, mean = 90, sd = 20),
 
 curve(f(x), col="red", -4, 200, n=301, las=1)
 ```
-
-```{r}
+</td>
+<td style="width:50%">
+```{r fig.width=6}
 plot(qr_code("https://michelescandola.shinyapps.io/MCMC/"))
 ```
-
+</td>
+</tr>
+</table>
 
 ## Monte Carlo Markov Chains 2/3
 
@@ -810,12 +818,12 @@ abline(v = rope_range, col = "gray", lty = 2)
 
 [@makowski2019indices]
 
+
+## Comparing BF, pd and pROPE
+
 ```{r}
 plot(qr_code("https://michelescandola.shinyapps.io/BF_pd_pROPE/"))
 ```
-
-
-## Comparing BF, pd and pROPE
 
 <center>
 ```{r, fig.height=1}
